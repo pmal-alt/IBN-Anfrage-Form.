@@ -26,6 +26,9 @@
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media (max-width:720px){.row{grid-template-columns:1fr}}
     .help{font-size:12px;color:var(--muted);margin-top:4px}
+    .status{margin-top:10px;font-size:14px;font-weight:600;color:var(--ok)}
+    .status.error{color:#991b1b}
+    .status.sending{color:#374151}
     .tag{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border-radius:999px;background:#fef2f2;border:1px solid #fde3e3;color:#991b1b;font-weight:600;font-size:12px}
     .tag.ok{background:#effaf4;border-color:#d9f3e6;color:#14533f}
     .tag.warn{background:#fff7ed;border:1px solid #ffedd5;color:#9a3412}
@@ -36,6 +39,8 @@
     .btnbar{display:flex;gap:10px;flex-wrap:wrap}
     .fieldset{border:1px dashed var(--bd);border-radius:12px;padding:12px;margin:10px 0}
     .fieldset>legend{padding:0 6px;color:#374151;font-weight:700}
+    .fieldset.placeholder{background:#f9fafb;border-style:solid;border-color:#e5e7eb}
+    .placeholder-text{font-size:13px;color:#4b5563}
     .hide{display:none}
     .checklist{display:grid;gap:8px}
     .checklist label{font-weight:500;margin:0;display:flex;gap:10px;align-items:center}
@@ -59,16 +64,20 @@
     <header>
       <div class="brand" aria-label="Viessmann placeholder logo"></div>
       <div>
-        <h1>IBN‑Anfrage – Demo</h1>
-        <div class="sub">Demo: Es werden keine Daten gesendet oder gespeichert. „Absenden“ zeigt eine Vorschau.</div>
+        <h1>IBN‑Anfrage – Formular</h1>
+        <div class="sub">Hinweis: Das Formular sendet über Formspree. Öffne die Datei direkt im Browser oder über einen kleinen lokalen Server. In vielen Online-Editoren werden externe Anfragen blockiert.</div>
       </div>
     </header>
+
+    <noscript>
+      <div class="status error" role="alert" style="margin-top:12px">⚠️ JavaScript ist deaktiviert. Bitte JavaScript aktivieren oder den Code in einem normalen Browserfenster öffnen, damit das Formular gesendet werden kann.</div>
+    </noscript>
 
     <div class="grid">
       <section class="card" aria-labelledby="formTitle">
         <div class="hd">
           <div id="formTitle">Formular</div>
-          <span class="tag">Demo / Schnittstelle folgt</span>
+          <span class="tag ok">Live / Formspree aktiviert</span>
         </div>
        <form id="ibnForm" action="https://formspree.io/f/xvgvjdlj" method="POST">
 
@@ -110,10 +119,17 @@
               <option value="komb">Kombianlage</option>
               <option value="vitoset">Vitoset Aqua (Wärmepumpenboiler)</option>
             </select>
-            <div class="help">Wählen Sie Ihre Anlage – die passende Checkliste wird automatisch eingeblendet.</div>
-          </fieldset>
+          <div class="help">Wählen Sie Ihre Anlage – die passende Checkliste wird automatisch eingeblendet.</div>
+        </fieldset>
 
-          <!-- Branch: Wärmepumpe (hidden by default) -->
+        <fieldset id="branch_placeholder" class="fieldset placeholder">
+          <legend>Checkliste</legend>
+          <div id="branch_placeholder_text" class="placeholder-text">
+            Bitte wählen Sie den passenden Anlagetyp (Wärmepumpe, Gas, Öl, Solar, …). Danach erscheint hier automatisch die entsprechende Checkliste.
+          </div>
+        </fieldset>
+
+        <!-- Branch: Wärmepumpe (hidden by default) -->
           <fieldset id="branch_wp" class="fieldset hide">
             <legend>Wärmepumpe</legend>
             <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
@@ -379,8 +395,8 @@
             <div class="help err hide" id="chk_error_klima">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
           </fieldset>
 
-          <!-- Schritt C: Wunschtermin (hidden until category chosen) -->
-          <fieldset id="block_termine" class="fieldset hide">
+        <!-- Schritt C: Wunschtermin -->
+        <fieldset id="block_termine" class="fieldset">
             <legend>Wunschtermin</legend>
             <div class="tag ok" id="leadtime_notice">Vorlaufzeit: Bitte Anlagetyp auswählen</div>
             <div id="leadtime_warn" class="tag warn hide" role="alert" style="margin-top:8px"></div>
@@ -413,8 +429,8 @@
             <div class="help">Hinweis: Freitagnachmittag führen wir keine Inbetriebnahmen durch.</div>
           </fieldset>
 
-          <!-- Schritt D: Kontaktdaten & Adressen (hidden until category chosen) -->
-          <fieldset id="block_contacts" class="fieldset hide">
+        <!-- Schritt D: Kontaktdaten & Adressen -->
+        <fieldset id="block_contacts" class="fieldset">
             <legend>Kontaktdaten & Adressen</legend>
             <label for="company">Installateur – Firmenname *</label>
             <input id="company" name="installer_company" required />
@@ -485,19 +501,17 @@
             </div>
           </fieldset>
 
-          <!-- Schritt E: Weitere Hinweise / Notizen (hidden until category chosen) -->
-          <fieldset id="notes_block" class="fieldset hide">
+        <!-- Schritt E: Weitere Hinweise / Notizen -->
+        <fieldset id="notes_block" class="fieldset">
             <legend>Weitere Hinweise / Notizen</legend>
             <label for="notes">Optional (z. B. Schlüsselbox‑Code, Absprachen wie Termin fix mit IWB, usw.)</label>
             <textarea id="notes" name="notes" placeholder="Freitext (optional)…"></textarea>
           </fieldset>
 
           <div class="btnbar">
-  <button type="submit" class="btn pri">Absenden</button>
-</div>
-<div class="help" style="margin-top:6px;color:#0b915a;font-weight:bold">
-  ✅ Ihre IBN-Anfrage wird direkt an Viessmann übermittelt.
-</div>
+            <button type="submit" class="btn pri" id="submitBtn">Absenden</button>
+          </div>
+          <div id="formStatus" class="status" aria-live="polite" role="status">✅ Ihre IBN-Anfrage wird direkt an Viessmann übermittelt.</div>
 
         </form>
       </section>
@@ -511,24 +525,12 @@
             <li>Geben Sie <strong>zwei Wunschtermine</strong> mit Zeitfenster an.</li>
             <li>Ergänzen Sie <strong>Kontaktdaten & Adressen</strong>.</li>
             <li>Optional: <strong>Weitere Hinweise</strong>.</li>
-            <li>Nutze <span class="kbd">Vorschau</span> oder <span class="kbd">JSON speichern (Demo)</span> zu Testzwecken.</li>
+            <li>Zum Schluss <strong>Absenden</strong> klicken – bei Problemen erscheint hier eine verständliche Statusmeldung.</li>
           </ol>
         </div>
       </aside>
     </div>
   </div>
-
-  <dialog id="jsonDialog">
-    <form method="dialog" style="padding:0">
-      <div class="hd" style="padding:14px 16px;border-bottom:1px solid var(--bd)">JSON‑Vorschau</div>
-      <div class="bd" style="padding:16px">
-        <pre id="jsonOut" aria-live="polite"></pre>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px">
-        <button class="btn ghost">Schliessen</button>
-      </div>
-    </form>
-  </dialog>
 
   <script>
     // --- Element-Refs ---
@@ -543,17 +545,38 @@
       lueft: document.getElementById('branch_lueft'),
       klima: document.getElementById('branch_klima')
     };
-    const termBlock = document.getElementById('block_termine');
-    const contactsBlock = document.getElementById('block_contacts');
-    const notesBlock = document.getElementById('notes_block');
+    const same = document.getElementById('same_as_owner');
+    const branchPlaceholder = document.getElementById('branch_placeholder');
+    const branchPlaceholderText = document.getElementById('branch_placeholder_text');
+    const placeholderDefaultText = branchPlaceholderText ? branchPlaceholderText.textContent.trim() : '';
+
+    function showPlaceholder(message){
+      if (!branchPlaceholder) return;
+      const text = message && message.trim() ? message : placeholderDefaultText;
+      if (branchPlaceholderText) branchPlaceholderText.textContent = text;
+      branchPlaceholder.classList.remove('hide');
+    }
+
+    function hidePlaceholder(){
+      if (!branchPlaceholder) return;
+      branchPlaceholder.classList.add('hide');
+      if (branchPlaceholderText) branchPlaceholderText.textContent = placeholderDefaultText;
+    }
 
     function onCategoryChange(){
       const v = cat.value;
       Object.values(branches).forEach(el => el && el.classList.add('hide'));
-      if (branches[v]) branches[v].classList.remove('hide');
-      if (termBlock) termBlock.classList.remove('hide');
-      if (contactsBlock) contactsBlock.classList.remove('hide');
-      if (notesBlock) notesBlock.classList.remove('hide');
+      const branch = branches[v];
+      if (branch){
+        hidePlaceholder();
+        branch.classList.remove('hide');
+        branch.scrollIntoView({behavior:'smooth', block:'start'});
+      } else {
+        const message = v
+          ? 'Für diesen Anlagetyp steht aktuell keine eigene Checkliste bereit. Bitte ergänzen Sie Details im Feld „Weitere Hinweise / Notizen“.'
+          : placeholderDefaultText;
+        showPlaceholder(message);
+      }
       updateLeadNotice();
       updateLeadWarn();
       if (v !== 'wp'){
@@ -580,6 +603,7 @@
     const date2 = document.getElementById('date2');
     function requiredLeadDays(){
       const v = cat.value;
+      if (!v) return 0;
       if (v === 'wp') return 15;
       if (v === 'gas' || v === 'oil') return 10;
       return 5;
@@ -655,32 +679,112 @@
   return true;
 }
 
-    // JSON
-    function collectFormData(frm){
-      const data = {}; const fd = new FormData(frm);
-      for (const [k,v] of fd.entries()){
-        if (data[k] !== undefined){ if (!Array.isArray(data[k])) data[k] = [data[k]]; data[k].push(v); }
-        else { data[k] = v; }
+    const status = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
+    const defaultSubmitLabel = submitBtn ? submitBtn.textContent : '';
+    const defaultStatusText = status ? status.textContent : '';
+    const replyToField = form.querySelector('input[name="_replyto"]');
+    const emailInput = document.getElementById('email');
+
+    function setStatus(text, mode){
+      if (!status) return;
+      status.textContent = text;
+      status.classList.remove('error','sending');
+      if (mode === 'error') status.classList.add('error');
+      if (mode === 'sending') status.classList.add('sending');
+    }
+
+    const hostHint = (window.location && window.location.hostname || '').toLowerCase();
+    const sandboxHosts = ['stackblitz', 'codepen', 'jsfiddle', 'w3schools', 'codesandbox'];
+    if (hostHint && sandboxHosts.some(h => hostHint.includes(h))){
+      setStatus('⚠️ Hinweis: Dieser Online-Editor blockiert externe Anfragen. Bitte öffne die HTML-Datei direkt im Browser oder starte sie lokal mit z. B. «python -m http.server».', 'error');
+    }
+
+    function resetDynamicSections(){
+      Object.values(branches).forEach(el => el && el.classList.add('hide'));
+      if (leadWarn) leadWarn.classList.add('hide');
+      showPlaceholder();
+      if (cat) cat.value = '';
+      const sw = document.getElementById('wp_split_wrap');
+      if (sw) sw.classList.add('hide');
+    }
+
+    async function handleSubmit(event){
+      if (!form) return;
+
+      if (!window.fetch || !window.FormData){
+        setStatus('⚠️ Dein Browser unterstützt die moderne Übermittlung nicht. Wir leiten zur klassischen Formspree-Seite weiter.', 'sending');
+        return; // Standard-Submit ausführen lassen
       }
-      data._meta = { prototype: 'viessmann-ibn-v1', submitted_at: new Date().toISOString() };
-      return data;
-    }
-    function showJSON(obj){
-      const out = document.getElementById('jsonOut'); const dlg = document.getElementById('jsonDialog');
-      if (out){ out.textContent = JSON.stringify(obj,null,2); }
-      if (dlg && dlg.showModal) dlg.showModal();
-    }
-    function download(filename, text){
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type:'application/json'})); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      if (!validateStrict()) return;
+
+      if (replyToField && emailInput) replyToField.value = emailInput.value || '';
+
+      if (submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Wird gesendet…';
+      }
+      setStatus('⏳ Anfrage wird übermittelt…', 'sending');
+
+      let fallbackToNative = false;
+
+      try {
+        const response = await fetch(form.action, {
+          method: form.method || 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok){
+          setStatus('✅ Vielen Dank! Ihre IBN-Anfrage wurde erfolgreich an Viessmann übermittelt. Wir melden uns in Kürze.', '');
+          form.reset();
+          resetDynamicSections();
+          syncOwner(false);
+          if (same) same.checked = false;
+          updateLeadNotice();
+          updateLeadWarn();
+        } else {
+          let message = '❌ Leider konnte die Anfrage nicht übermittelt werden. Bitte versuchen Sie es erneut.';
+          try {
+            const data = await response.json();
+            if (data && data.errors){
+              const first = data.errors[0];
+              if (first && first.message) message = `❌ ${first.message}`;
+            }
+          } catch (err) {
+            // ignore JSON parse errors
+          }
+          setStatus(message, 'error');
+        }
+      } catch (error) {
+        console.warn('Formular konnte nicht via fetch gesendet werden – wechsle auf Fallback.', error);
+        if (error instanceof TypeError){
+          fallbackToNative = true;
+        } else {
+          setStatus('❌ Es ist ein Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.', 'error');
+        }
+      } finally {
+        if (submitBtn){
+          submitBtn.disabled = false;
+          submitBtn.textContent = defaultSubmitLabel || 'Absenden';
+        }
+
+        if (fallbackToNative){
+          setStatus('⚠️ Automatischer Versand blockiert. Die Formspree-Bestätigungsseite öffnet sich gleich in diesem Fenster.', 'sending');
+          setTimeout(() => form.submit(), 120);
+          return;
+        }
+
+        if (status && !status.textContent){
+          setStatus(defaultStatusText || '');
+        }
+      }
     }
 
-    document.getElementById('previewBtn').addEventListener('click', () => {
-      if (!form.reportValidity()) return; if (!validateStrict()) return; const data = collectFormData(form); showJSON(data);
-    });
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      if (!form.reportValidity()) return; if (!validateStrict()) return; const data = collectFormData(form); download('ibn-prototype.json', JSON.stringify(data,null,2));
-    });
-
+    form.addEventListener('submit', handleSubmit);
 
     // Zusatzleistungen Exklusiv-Logik (Keine davon)
     form.addEventListener('change', (e)=>{
@@ -691,7 +795,6 @@
     });
 
     // Adresse: Anlageadresse -> Eigentümeradresse
-    const same = document.getElementById('same_as_owner');
     function syncOwner(toOwner){
       const map = [['plant_street','owner_street'],['plant_zip','owner_zip'],['plant_city','owner_city'],['plant_phone','owner_phone']];
       map.forEach(([src,dst])=>{ const s=document.getElementById(src), d=document.getElementById(dst); if (!s||!d) return; if (toOwner){ d.value=s.value; d.setAttribute('disabled','disabled'); } else { d.removeAttribute('disabled'); }});
@@ -699,11 +802,10 @@
     if (same) same.addEventListener('change', e=> syncOwner(e.target.checked));
 
     // Initial
-    Object.values(branches).forEach(el => el && el.classList.add('hide'));
-    if (termBlock) termBlock.classList.add('hide');
-    if (contactsBlock) contactsBlock.classList.add('hide');
-    if (notesBlock) notesBlock.classList.add('hide');
-  
+    resetDynamicSections();
+    updateLeadNotice();
+    updateLeadWarn();
+
 // --- PATCH: hide Zusatzleistungen for Solar, Holz, Lüftung, Klima ---
 document.addEventListener('DOMContentLoaded', () => {
   const targets = [
