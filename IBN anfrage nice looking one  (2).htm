@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viessmann – IBN Anfrage (Prototype)</title>
+  <style>
+    :root{--bg:#f6f7f9;--card:#ffffff;--pri:#e2001a;--txt:#1f2328;--muted:#6a737d;--bd:#e5e7eb;--ok:#0b915a}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font:15px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--txt);background:var(--bg)}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+    header{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+    .brand{width:122px;height:34px;background:var(--pri);border-radius:6px;position:relative}
+    .brand::after{content:"";position:absolute;inset:8px;background:#fff;clip-path:polygon(0 0,100% 0,84% 100%,0 100%)}
+    h1{font-size:22px;margin:0}
+    .sub{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:18px}
+    @media (max-width:960px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+    .card .hd{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+    .card .bd{padding:16px}
+    label{display:block;font-weight:600;margin:14px 0 6px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:#fff}
+    textarea{min-height:110px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:720px){.row{grid-template-columns:1fr}}
+    .help{font-size:12px;color:var(--muted);margin-top:4px}
+    .tag{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border-radius:999px;background:#fef2f2;border:1px solid #fde3e3;color:#991b1b;font-weight:600;font-size:12px}
+    .tag.ok{background:#effaf4;border-color:#d9f3e6;color:#14533f}
+    .tag.warn{background:#fff7ed;border:1px solid #ffedd5;color:#9a3412}
+    .err{color:#991b1b;font-weight:600}
+    .btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+    .btn.pri{background:var(--pri);color:#fff}
+    .btn.ghost{background:#fff;border:1px solid var(--bd)}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap}
+    .fieldset{border:1px dashed var(--bd);border-radius:12px;padding:12px;margin:10px 0}
+    .fieldset>legend{padding:0 6px;color:#374151;font-weight:700}
+    .hide{display:none}
+    .checklist{display:grid;gap:8px}
+    .checklist label{font-weight:500;margin:0;display:flex;gap:10px;align-items:center}
+    .checklist input[type=checkbox]{width:auto;margin-top:0}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef2ff;border:1px solid #e0e7ff;color:#3730a3;font-size:12px}
+    .aside{font-size:13px;color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:0 6px}
+    .hr{height:1px;background:var(--bd);margin:16px 0}
+    dialog{border:0;border-radius:14px;max-width:780px;width:92vw}
+    pre{background:#0b1020;color:#e5e7eb;border-radius:10px;padding:12px;overflow:auto}
+    .muted{color:var(--muted)}
+    .intro-text{margin:12px 0;padding:10px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;white-space:pre-line}
+    .addons{display:grid;gap:10px}
+    .addons label{display:flex;gap:10px;align-items:center;font-weight:500}
+    .addons input[type=checkbox]{width:auto;margin-top:0}
+    .mt{margin:12px 0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand" aria-label="Viessmann placeholder logo"></div>
+      <div>
+        <h1>IBN‑Anfrage – Demo</h1>
+        <div class="sub">Demo: Es werden keine Daten gesendet oder gespeichert. „Absenden“ zeigt eine Vorschau.</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="formTitle">
+        <div class="hd">
+          <div id="formTitle">Formular</div>
+          <span class="tag">Demo / Schnittstelle folgt</span>
+        </div>
+       <form id="ibnForm" action="https://formspree.io/f/xvgvjdlj" method="POST">
+
+<input type="hidden" name="_subject" value="Neue IBN-Anfrage über Viessmann-Formular">
+<input type="hidden" name="_replyto" value="">
+<input type="hidden" name="_template" value="table">
+
+
+          <!-- Schritt A: Basisangaben -->
+          <fieldset class="fieldset">
+            <legend>Basis</legend>
+            <label for="email">E‑Mail *</label>
+            <input id="email" name="email" type="email" required placeholder="name@firma.ch" />
+
+            <div class="help">An diese Adresse senden wir die Bestätigung.</div>
+
+<label for="customer_no">Kundennummer (optional)</label>
+<input id="customer_no" name="customer_no" type="text" placeholder="z. B. 123456" inputmode="numeric" />
+<div class="help">Optional: Ihre interne oder Viessmann-Kundennummer.</div>
+
+            <div class="row">
+              <div>
+                <label for="order_no">Auftragsbestätigung‑Nr. (beginnt mit 6200) *</label>
+                <input id="order_no" name="order_no" placeholder="6200xxxxx" required />
+              </div>
+            </div>
+
+            <label for="category">Anlagetyp auswählen *</label>
+            <select id="category" name="category" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option value="wp">Wärmepumpe</option>
+              <option value="gas">Gas</option>
+              <option value="oil">Öl</option>
+              <option value="holz">Holz</option>
+              <option value="solar">Solar</option>
+              <option value="komm">Kommunikationstechnik</option>
+              <option value="lueft">Lüftung</option>
+              <option value="klima">Klima</option>
+              <option value="komb">Kombianlage</option>
+              <option value="vitoset">Vitoset Aqua (Wärmepumpenboiler)</option>
+            </select>
+            <div class="help">Wählen Sie Ihre Anlage – die passende Checkliste wird automatisch eingeblendet.</div>
+          </fieldset>
+
+          <!-- Branch: Wärmepumpe (hidden by default) -->
+          <fieldset id="branch_wp" class="fieldset hide">
+            <legend>Wärmepumpe</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+
+            <label for="wp_model">Modell *</label>
+            <select id="wp_model" name="wp_model">
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitocal 200‑S / 222‑S</option>
+              <option>Vitocal 150‑A / 200‑A / 222‑A / 250‑A / 252‑A / 350‑A</option>
+              <option>Vitocal 250‑A Pro</option>
+              <option>Vitocal 200‑G</option>
+              <option>Vitocal 300‑G / 333‑G / 350‑G (einstufig Inverter)</option>
+              <option>Vitocal 300‑G / 350‑G (zweistufig)</option>
+            </select>
+
+            <div id="wp_split_wrap" class="hide">
+              <label>Situation Splitleitungen</label>
+              <select id="wp_split" name="wp_split">
+                <option>bereits verlegt & angeschlossen</option>
+                <option>anschliessen</option>
+                <option>verlegen & anschliessen</option>
+              </select>
+            </div>
+
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="wp_addon" value="inbetriebnahme"/> Inbetriebnahme</label>
+              <label><input type="checkbox" name="wp_addon" value="inbetriebnahme_wpsm"/> Inbetriebnahme nach WPSM inkl. Nachkontrolle</label>
+              <label><input type="checkbox" name="wp_addon" value="alte_wp_absaugen"/> Alte WP Absaugen</label>
+              <label><input type="checkbox" name="wp_addon" value="kaskade"/> Kaskade</label>
+              <label><input type="checkbox" name="wp_addon" value="eisspeicher"/> Eisspeicher</label>
+              <label><input type="checkbox" name="wp_addon" value="active_cooling"/> Active Cooling</label>
+              <label><input type="checkbox" name="wp_addon" value="natural_cooling"/> Natural Cooling</label>
+              <label><input type="checkbox" name="wp_addon" value="photovoltaik"/> Photovoltaik Anbindung</label>
+              <label><input type="checkbox" name="wp_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_wp">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Wärmepumpen Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="wp_chk" value="1"/> Hydraulik gefüllt, gespült und entlüftet</label>
+              <label><input type="checkbox" name="wp_chk" value="2"/> Installation nach VI‑Prinzipschema ausgeführt</label>
+              <label><input type="checkbox" name="wp_chk" value="3"/> Sonde / Zwischenkreis mit Frostschutz nach Viessmann‑Vorgabe befüllt und entlüftet (BW)</label>
+              <label><input type="checkbox" name="wp_chk" value="4"/> Splitleitung nach VI Montage & Serviceanleitung verlegt</label>
+              <label><input type="checkbox" name="wp_chk" value="5"/> Wärmepumpe und Komponenten elektrisch nach VI‑Prinzipschema angeschlossen</label>
+              <label><input type="checkbox" name="wp_chk" value="confirm"/> Ich bestätige die Checkliste.</label>
+            </div>
+            <div class="help err hide" id="chk_error_wp">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <!-- Branches: Gas / Öl / Holz / Solar / Lüftung / Klima (hidden by default) -->
+          <fieldset id="branch_gas" class="fieldset hide">
+            <legend>Gas</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="gas_model">Anlagentyp / Modell *</label>
+            <select id="gas_model" name="gas_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitodens 100‑W</option>
+              <option>Vitodens 200‑W</option>
+              <option>Vitocrossal 200 CM2 / CI2</option>
+              <option>Vitocrossal 300 CU3A</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="gas_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_gas">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Gas Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="gas_chk"/> Alle elektrischen Anschlüsse sind bis zum Wunschtermin fertiggestellt</label>
+              <label><input type="checkbox" name="gas_chk"/> Der Wärmetauscher ist gefüllt und entlüftet</label>
+              <label><input type="checkbox" name="gas_chk"/> Die Anlage entspricht dem von Viessmann mitgelieferten Prinzipschema</label>
+              <label><input type="checkbox" name="gas_chk"/> Die Heizungsanlage ist am Einsatztag komplett fertiggestellt</label>
+              <label><input type="checkbox" name="gas_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_gas">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <fieldset id="branch_oil" class="fieldset hide">
+            <legend>Öl</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="oil_model">Anlagentyp / Modell *</label>
+            <select id="oil_model" name="oil_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitoladens 300‑C</option>
+              <option>Vitorondens 200‑T</option>
+              <option>Vitorond 100</option>
+              <option>Vitorond 200</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div id="oil_line_wrap" class="mt">
+              <label>Öl‑Leitungsmontage</label>
+              <select id="oil_line" name="oil_line">
+                <option>bereits montiert & angeschlossen</option>
+                <option>montieren</option>
+                <option>verlegen & montieren</option>
+              </select>
+            </div>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="oil_addon" value="oil_line_montage"/> Öl‑Leitungsmontage</label>
+              <label><input type="checkbox" name="oil_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_oil">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Öl Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="oil_chk"/> Alle elektrischen Anschlüsse sind bis zum Wunschtermin fertiggestellt</label>
+              <label><input type="checkbox" name="oil_chk"/> Der Wärmetauscher ist gefüllt und entlüftet</label>
+              <label><input type="checkbox" name="oil_chk"/> Die Anlage entspricht dem von Viessmann mitgelieferten Prinzipschema</label>
+              <label><input type="checkbox" name="oil_chk"/> Die Heizungsanlage ist am Einsatztag komplett fertiggestellt</label>
+              <label><input type="checkbox" name="oil_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_oil">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <fieldset id="branch_holz" class="fieldset hide">
+            <legend>Holz</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="holz_model">Anlagentyp / Modell *</label>
+            <select id="holz_model" name="holz_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitoligno 150‑S</option>
+              <option>Vitoligno 200‑S</option>
+              <option>Vitoligno 300‑C</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="holz_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_holz">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Holz Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="holz_chk"/> Alle elektrischen Anschlüsse sind bis zum Wunschtermin fertiggestellt</label>
+              <label><input type="checkbox" name="holz_chk"/> Der Wärmetauscher ist gefüllt und entlüftet</label>
+              <label><input type="checkbox" name="holz_chk"/> Die Anlage entspricht dem von Viessmann mitgelieferten Prinzipschema</label>
+              <label><input type="checkbox" name="holz_chk"/> Die Heizungsanlage ist am Einsatztag komplett fertiggestellt</label>
+              <label><input type="checkbox" name="holz_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_holz">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <fieldset id="branch_solar" class="fieldset hide">
+            <legend>Solar</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="solar_model">Anlagentyp / Modell *</label>
+            <select id="solar_model" name="solar_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitosol 200‑F</option>
+              <option>Vitosol 300‑T</option>
+              <option>Flachkollektor (allg.)</option>
+              <option>Röhrenkollektor (allg.)</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="solar_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_solar">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Solar Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="solar_chk"/> Installation nach Viessmann‑Schema ausgeführt</label>
+              <label><input type="checkbox" name="solar_chk"/> Solarkreis wird bei IBN durch Viessmann gemäss Auftragsbestätigung befüllt</label>
+              <label><input type="checkbox" name="solar_chk"/> Solarkreis wurde mit Frostschutz (Tyfocor) befüllt und entlüftet</label>
+              <label><input type="checkbox" name="solar_chk"/> Zugang zum Dach ist gewährleistet und die Absicherung ist SUVA‑konform</label>
+              <label><input type="checkbox" name="solar_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_solar">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <fieldset id="branch_lueft" class="fieldset hide">
+            <legend>Lüftung</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="lueft_model">Anlagentyp / Modell *</label>
+            <select id="lueft_model" name="lueft_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Vitovent 200‑C</option>
+              <option>Vitovent 300‑W</option>
+              <option>Zentrale Anlage</option>
+              <option>Dezentrale Anlage</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="lueft_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_lueft">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Anwesenheit bei Inbetriebnahme</strong><br>– Lüftungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Lüftung Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="lueft_chk"/> Das Gebäude ist im bezugsfähigen Zustand und die Luftfilter sind sauber</label>
+              <label><input type="checkbox" name="lueft_chk"/> Der Termin muss mindestens 15 Arbeitstage vorher mit Viessmann abgestimmt werden</label>
+              <label><input type="checkbox" name="lueft_chk"/> Der Lüftungsplaner wird vorab die Lüftungsplanung einschl. der Luftmengenberechnung zur Verfügung stellen</label>
+              <label><input type="checkbox" name="lueft_chk"/> Die Lüftungsanlage muss nach Vorgaben der Viessmann Planungsunterlagen fertig montiert und betriebsbereit sein</label>
+              <label><input type="checkbox" name="lueft_chk"/> Die elektrische Verdrahtung muss nach gültigen Richtlinien ausgeführt sein</label>
+              <label><input type="checkbox" name="lueft_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_lueft">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <fieldset id="branch_klima" class="fieldset hide">
+            <legend>Klima</legend>
+            <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
+            <label for="klima_model">Anlagentyp / Modell *</label>
+            <select id="klima_model" name="klima_model" required>
+              <option value="" disabled selected>Bitte auswählen…</option>
+              <option>Split Single</option>
+              <option>Multi‑Split</option>
+              <option>VRF / VRV</option>
+              <option>Monoblock</option>
+              <option>Sonstiges / nicht gelistet</option>
+            </select>
+            <div class="hr"></div>
+            <span class="pill">Zusatzleistungen</span>
+            <div class="addons" data-addons="required">
+              <label><input type="checkbox" name="klima_addon" value="none" data-none/> Keine davon</label>
+            </div>
+            <div class="help err hide" id="addons_error_klima">Bitte wählen Sie mindestens eine Zusatzleistung (oder «Keine davon»).</div>
+            <div class="hr"></div>
+            <div class="help"><strong>Am Termin bitte vor Ort</strong><br>– Heizungsinstallateur<br>– Elektriker<br>– Bauherr / Hauswart / Verwaltung</div>
+            <div class="hr"></div>
+            <span class="pill">Pflicht‑Checkliste – Klima Inbetriebnahme – Stand der Anlage</span>
+            <div class="help">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+            <div class="checklist" data-checklist="strict">
+              <label><input type="checkbox" name="klima_chk"/> Der Termin muss mindestens 15 Arbeitstage vorher mit Viessmann abgestimmt werden.</label>
+              <label><input type="checkbox" name="klima_chk"/> Die Anlage muss gemäss Planungsunterlagen fertig montiert und betriebsbereit sein.</label>
+              <label><input type="checkbox" name="klima_chk"/> Kältemittelleitungen nach Planung verlegt und bis zu den Bördelstellen fertig ausgerichtet.</label>
+              <label><input type="checkbox" name="klima_chk"/> Wetterbedingungen trocken und > 5 °C (sonst evtl. Verschiebung/Mehraufwand).</label>
+              <label><input type="checkbox" name="klima_chk"/> Die elektrische Verdrahtung muss nach gültigen Richtlinien ausgeführt sein.</label>
+              <label><input type="checkbox" name="klima_chk" value="confirm"/> Ich bestätige die Checkliste</label>
+            </div>
+            <div class="help err hide" id="chk_error_klima">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
+          </fieldset>
+
+          <!-- Schritt C: Wunschtermin (hidden until category chosen) -->
+          <fieldset id="block_termine" class="fieldset hide">
+            <legend>Wunschtermin</legend>
+            <div class="tag ok" id="leadtime_notice">Vorlaufzeit: Bitte Anlagetyp auswählen</div>
+            <div id="leadtime_warn" class="tag warn hide" role="alert" style="margin-top:8px"></div>
+            <div class="row">
+              <div>
+                <label for="date1">1. Wunschtermin *</label>
+                <input id="date1" name="date1" type="date" required />
+              </div>
+              <div>
+                <label for="slot1">Zeitfenster *</label>
+                <select id="slot1" name="slot1" required>
+                  <option>Vormittag / 08:00</option>
+                  <option>Nachmittag / 13:00</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="date2">2. Wunschtermin *</label>
+                <input id="date2" name="date2" type="date" required />
+              </div>
+              <div>
+                <label for="slot2">Zeitfenster *</label>
+                <select id="slot2" name="slot2" required>
+                  <option>Vormittag / 08:00</option>
+                  <option>Nachmittag / 13:00</option>
+                </select>
+              </div>
+            </div>
+            <div class="help">Hinweis: Freitagnachmittag führen wir keine Inbetriebnahmen durch.</div>
+          </fieldset>
+
+          <!-- Schritt D: Kontaktdaten & Adressen (hidden until category chosen) -->
+          <fieldset id="block_contacts" class="fieldset hide">
+            <legend>Kontaktdaten & Adressen</legend>
+            <label for="company">Installateur – Firmenname *</label>
+            <input id="company" name="installer_company" required />
+            <div class="row">
+              <div>
+                <label for="site_contact">Ansprechpartner vor Ort *</label>
+                <input id="site_contact" name="site_contact" required />
+              </div>
+              <div>
+                <label for="inst_phone">Telefon *</label>
+                <input id="inst_phone" name="installer_phone" inputmode="tel" required />
+              </div>
+            </div>
+            <div class="hr"></div>
+            <span class="pill">Anlageadresse</span>
+            <div class="row">
+              <div>
+                <label for="plant_street">Strasse *</label>
+                <input id="plant_street" name="plant_street" required />
+              </div>
+              <div>
+                <label for="plant_zip">PLZ *</label>
+                <input id="plant_zip" name="plant_zip" inputmode="numeric" required />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="plant_city">Ort *</label>
+                <input id="plant_city" name="plant_city" required />
+              </div>
+              <div>
+                <label for="plant_phone">Telefon</label>
+                <input id="plant_phone" name="plant_phone" inputmode="tel" />
+              </div>
+            </div>
+            <label><input type="checkbox" id="same_as_owner" /> Anlageadresse entspricht Eigentümeradresse</label>
+            <div class="hr"></div>
+            <span class="pill">Eigentümer / Bauherr</span>
+            <div class="row">
+              <div>
+                <label for="owner_name">Name *</label>
+                <input id="owner_name" name="owner_name" required />
+              </div>
+              <div>
+                <label for="owner_email">E‑Mail</label>
+                <input id="owner_email" name="owner_email" type="email" />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="owner_street">Strasse *</label>
+                <input id="owner_street" name="owner_street" required />
+              </div>
+              <div>
+                <label for="owner_zip">PLZ *</label>
+                <input id="owner_zip" name="owner_zip" inputmode="numeric" required />
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label for="owner_city">Ort *</label>
+                <input id="owner_city" name="owner_city" required />
+              </div>
+              <div>
+                <label for="owner_phone">Telefon</label>
+                <input id="owner_phone" name="owner_phone" inputmode="tel" />
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Schritt E: Weitere Hinweise / Notizen (hidden until category chosen) -->
+          <fieldset id="notes_block" class="fieldset hide">
+            <legend>Weitere Hinweise / Notizen</legend>
+            <label for="notes">Optional (z. B. Schlüsselbox‑Code, Absprachen wie Termin fix mit IWB, usw.)</label>
+            <textarea id="notes" name="notes" placeholder="Freitext (optional)…"></textarea>
+          </fieldset>
+
+          <div class="btnbar">
+  <button type="submit" class="btn pri">Absenden</button>
+</div>
+<div class="help" style="margin-top:6px;color:#0b915a;font-weight:bold">
+  ✅ Ihre IBN-Anfrage wird direkt an Viessmann übermittelt.
+</div>
+
+        </form>
+      </section>
+
+      <aside class="card">
+        <div class="hd">So funktioniert’s</div>
+        <div class="bd aside">
+          <p><span class="tag ok">Ablauf</span></p>
+          <ol>
+            <li>Wählen Sie den <strong>Anlagetyp</strong> – die passende Checkliste wird automatisch eingeblendet.</li>
+            <li>Geben Sie <strong>zwei Wunschtermine</strong> mit Zeitfenster an.</li>
+            <li>Ergänzen Sie <strong>Kontaktdaten & Adressen</strong>.</li>
+            <li>Optional: <strong>Weitere Hinweise</strong>.</li>
+            <li>Nutze <span class="kbd">Vorschau</span> oder <span class="kbd">JSON speichern (Demo)</span> zu Testzwecken.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <dialog id="jsonDialog">
+    <form method="dialog" style="padding:0">
+      <div class="hd" style="padding:14px 16px;border-bottom:1px solid var(--bd)">JSON‑Vorschau</div>
+      <div class="bd" style="padding:16px">
+        <pre id="jsonOut" aria-live="polite"></pre>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px">
+        <button class="btn ghost">Schliessen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    // --- Element-Refs ---
+    const form = document.getElementById('ibnForm');
+    const cat = document.getElementById('category');
+    const branches = {
+      wp: document.getElementById('branch_wp'),
+      gas: document.getElementById('branch_gas'),
+      oil: document.getElementById('branch_oil'),
+      holz: document.getElementById('branch_holz'),
+      solar: document.getElementById('branch_solar'),
+      lueft: document.getElementById('branch_lueft'),
+      klima: document.getElementById('branch_klima')
+    };
+    const termBlock = document.getElementById('block_termine');
+    const contactsBlock = document.getElementById('block_contacts');
+    const notesBlock = document.getElementById('notes_block');
+
+    function onCategoryChange(){
+      const v = cat.value;
+      Object.values(branches).forEach(el => el && el.classList.add('hide'));
+      if (branches[v]) branches[v].classList.remove('hide');
+      if (termBlock) termBlock.classList.remove('hide');
+      if (contactsBlock) contactsBlock.classList.remove('hide');
+      if (notesBlock) notesBlock.classList.remove('hide');
+      updateLeadNotice();
+      updateLeadWarn();
+      if (v !== 'wp'){
+        const sw = document.getElementById('wp_split_wrap');
+        if (sw) sw.classList.add('hide');
+      }
+    }
+    cat.addEventListener('change', onCategoryChange);
+
+    // WP: Splitleitungen nur bei 200‑S / 222‑S
+    const wpModel = document.getElementById('wp_model');
+    const wpSplitWrap = document.getElementById('wp_split_wrap');
+    function updateWpSplit(){
+      if (!wpModel || !wpSplitWrap) return;
+      const show = (wpModel.value || '').includes('Vitocal 200‑S / 222‑S');
+      wpSplitWrap.classList.toggle('hide', !show);
+    }
+    if (wpModel) wpModel.addEventListener('change', updateWpSplit);
+
+    // Leadtime
+    const leadNotice = document.getElementById('leadtime_notice');
+    const leadWarn = document.getElementById('leadtime_warn');
+    const date1 = document.getElementById('date1');
+    const date2 = document.getElementById('date2');
+    function requiredLeadDays(){
+      const v = cat.value;
+      if (v === 'wp') return 15;
+      if (v === 'gas' || v === 'oil') return 10;
+      return 5;
+    }
+    function businessDaysBetween(a,b){
+      const d1 = new Date(a.getFullYear(),a.getMonth(),a.getDate());
+      const d2 = new Date(b.getFullYear(),b.getMonth(),b.getDate());
+      let days=0, cur=new Date(d1);
+      while(cur<=d2){
+        const wd = cur.getDay(); if (wd!==0 && wd!==6) days++; cur.setDate(cur.getDate()+1);
+      }
+      return Math.max(0, days-1);
+    }
+    function updateLeadNotice(){
+      const need = requiredLeadDays();
+      if (need === 15) leadNotice.textContent = 'Vorlaufzeit: 15 Arbeitstage (Wärmepumpen)';
+      else if (need === 10) leadNotice.textContent = 'Vorlaufzeit: 10 Arbeitstage (Gas/Öl)';
+      else if (need === 5) leadNotice.textContent = 'Vorlaufzeit: 5 Arbeitstage';
+      else leadNotice.textContent = 'Vorlaufzeit: Bitte Anlagetyp auswählen';
+    }
+    function updateLeadWarn(){
+      const need = requiredLeadDays();
+      const raw = [date1 && date1.value, date2 && date2.value].filter(Boolean);
+      if (!need || raw.length===0){ leadWarn.classList.add('hide'); return; }
+      const today = new Date();
+      const tooSoon = raw.some(v => businessDaysBetween(today, new Date(v+'T00:00:00')) < need);
+      if (tooSoon){
+        leadWarn.textContent = `Der gewünschte Termin liegt unter ${need} Arbeitstagen Vorlaufzeit. Wir können ihn eventuell nicht einhalten.`;
+        leadWarn.classList.remove('hide');
+      } else { leadWarn.classList.add('hide'); }
+    }
+    ;[date1,date2].forEach(el => el && el.addEventListener('change', updateLeadWarn));
+
+    // Pflichtprüfungen
+    function validateStrict(){
+  // Hide all checklist error banners initially
+  ['chk_error_wp','chk_error_gas','chk_error_oil','chk_error_holz','chk_error_solar','chk_error_lueft','chk_error_klima']
+    .forEach(id=>{ const el=document.getElementById(id); if (el) el.classList.add('hide'); });
+
+  const v = cat.value; 
+  const active = branches[v]; 
+  if (!active || active.classList.contains('hide')) return true;
+
+  // Required checklist: all boxes must be checked, if present
+  const strict = active.querySelector('[data-checklist="strict"]');
+  if (strict){
+    const ok = Array.from(strict.querySelectorAll('input[type=checkbox]')).every(ch => ch.checked);
+    if (!ok){ 
+      const err = document.getElementById('chk_error_'+v); 
+      if (err){ err.classList.remove('hide'); err.scrollIntoView({behavior:'smooth', block:'center'}); } 
+      return false; 
+    }
+  }
+
+  // Addons required: only if group exists AND is visible (not display:none and not inside .hide)
+  const addons = active.querySelector('[data-addons=\"required\"]');
+  const isHidden = (el) => {
+    if (!el) return true;
+    if (el.closest('.hide')) return true;
+    // inline style check
+    if (el.style && (el.style.display === 'none' || el.style.visibility === 'hidden')) return true;
+    // layout check (works if already in DOM)
+    if (typeof el.offsetParent !== 'undefined' && el.offsetParent === null) return true;
+    return false;
+  };
+
+  if (addons && !isHidden(addons)){
+    const boxes = Array.from(addons.querySelectorAll('input[type=checkbox]'));
+    const any = boxes.some(b=>b.checked);
+    const err = document.getElementById('addons_error_'+v);
+    if (!any){ if (err) err.classList.remove('hide'); return false; } else { if (err) err.classList.add('hide'); }
+  }
+  return true;
+}
+
+    // JSON
+    function collectFormData(frm){
+      const data = {}; const fd = new FormData(frm);
+      for (const [k,v] of fd.entries()){
+        if (data[k] !== undefined){ if (!Array.isArray(data[k])) data[k] = [data[k]]; data[k].push(v); }
+        else { data[k] = v; }
+      }
+      data._meta = { prototype: 'viessmann-ibn-v1', submitted_at: new Date().toISOString() };
+      return data;
+    }
+    function showJSON(obj){
+      const out = document.getElementById('jsonOut'); const dlg = document.getElementById('jsonDialog');
+      if (out){ out.textContent = JSON.stringify(obj,null,2); }
+      if (dlg && dlg.showModal) dlg.showModal();
+    }
+    function download(filename, text){
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type:'application/json'})); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      if (!form.reportValidity()) return; if (!validateStrict()) return; const data = collectFormData(form); showJSON(data);
+    });
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      if (!form.reportValidity()) return; if (!validateStrict()) return; const data = collectFormData(form); download('ibn-prototype.json', JSON.stringify(data,null,2));
+    });
+
+
+    // Zusatzleistungen Exklusiv-Logik (Keine davon)
+    form.addEventListener('change', (e)=>{
+      const t = e.target; if (!t || !t.matches('.addons input[type=checkbox]')) return; const grp = t.closest('.addons'); if (!grp) return;
+      const none = grp.querySelector('input[data-none]'); const others = Array.from(grp.querySelectorAll('input[type=checkbox]:not([data-none])'));
+      if (t === none && none.checked){ others.forEach(cb=> cb.checked = false); }
+      else if (others.includes(t)){ if (t.checked && none) none.checked = false; }
+    });
+
+    // Adresse: Anlageadresse -> Eigentümeradresse
+    const same = document.getElementById('same_as_owner');
+    function syncOwner(toOwner){
+      const map = [['plant_street','owner_street'],['plant_zip','owner_zip'],['plant_city','owner_city'],['plant_phone','owner_phone']];
+      map.forEach(([src,dst])=>{ const s=document.getElementById(src), d=document.getElementById(dst); if (!s||!d) return; if (toOwner){ d.value=s.value; d.setAttribute('disabled','disabled'); } else { d.removeAttribute('disabled'); }});
+    }
+    if (same) same.addEventListener('change', e=> syncOwner(e.target.checked));
+
+    // Initial
+    Object.values(branches).forEach(el => el && el.classList.add('hide'));
+    if (termBlock) termBlock.classList.add('hide');
+    if (contactsBlock) contactsBlock.classList.add('hide');
+    if (notesBlock) notesBlock.classList.add('hide');
+  
+// --- PATCH: hide Zusatzleistungen for Solar, Holz, Lüftung, Klima ---
+document.addEventListener('DOMContentLoaded', () => {
+  const targets = [
+    { id: 'branch_solar', err: 'addons_error_solar' },
+    { id: 'branch_holz',  err: 'addons_error_holz' },
+    { id: 'branch_lueft', err: 'addons_error_lueft' },
+    { id: 'branch_klima', err: 'addons_error_klima' },
+  ];
+  targets.forEach(t => {
+    const fs = document.getElementById(t.id);
+    if (!fs) return;
+    const addons = fs.querySelector('[data-addons="required"]');
+    if (addons){
+      // hide the pill label before addons
+      const pill = addons.previousElementSibling;
+      if (pill && pill.classList && pill.classList.contains('pill')) pill.style.display = 'none';
+      // hide the addons group
+      addons.style.display = 'none';
+    }
+    const err = document.getElementById(t.err);
+    if (err) err.style.display = 'none';
+  });
+});
+// --- END PATCH ---
+
+  </script>
+
+
+
+</body>
+
+
+</html>
