@@ -62,16 +62,20 @@
     <header>
       <div class="brand" aria-label="Viessmann placeholder logo"></div>
       <div>
-        <h1>IBN‑Anfrage – Demo</h1>
-        <div class="sub">Demo: Es werden keine Daten gesendet oder gespeichert. „Absenden“ zeigt eine Vorschau.</div>
+        <h1>IBN‑Anfrage – Formular</h1>
+        <div class="sub">Hinweis: Das Formular sendet über Formspree. Öffne die Datei direkt im Browser oder über einen kleinen lokalen Server. In vielen Online-Editoren werden externe Anfragen blockiert.</div>
       </div>
     </header>
+
+    <noscript>
+      <div class="status error" role="alert" style="margin-top:12px">⚠️ JavaScript ist deaktiviert. Bitte JavaScript aktivieren oder den Code in einem normalen Browserfenster öffnen, damit das Formular gesendet werden kann.</div>
+    </noscript>
 
     <div class="grid">
       <section class="card" aria-labelledby="formTitle">
         <div class="hd">
           <div id="formTitle">Formular</div>
-          <span class="tag">Demo / Schnittstelle folgt</span>
+          <span class="tag ok">Live / Formspree aktiviert</span>
         </div>
        <form id="ibnForm" action="https://formspree.io/f/xvgvjdlj" method="POST">
 
@@ -512,7 +516,7 @@
             <li>Geben Sie <strong>zwei Wunschtermine</strong> mit Zeitfenster an.</li>
             <li>Ergänzen Sie <strong>Kontaktdaten & Adressen</strong>.</li>
             <li>Optional: <strong>Weitere Hinweise</strong>.</li>
-            <li>Nutze <span class="kbd">Vorschau</span> oder <span class="kbd">JSON speichern (Demo)</span> zu Testzwecken.</li>
+            <li>Zum Schluss <strong>Absenden</strong> klicken – bei Problemen erscheint hier eine verständliche Statusmeldung.</li>
           </ol>
         </div>
       </aside>
@@ -673,6 +677,12 @@
       if (mode === 'sending') status.classList.add('sending');
     }
 
+    const hostHint = (window.location && window.location.hostname || '').toLowerCase();
+    const sandboxHosts = ['stackblitz', 'codepen', 'jsfiddle', 'w3schools', 'codesandbox'];
+    if (hostHint && sandboxHosts.some(h => hostHint.includes(h))){
+      setStatus('⚠️ Hinweis: Dieser Online-Editor blockiert externe Anfragen. Bitte öffne die HTML-Datei direkt im Browser oder starte sie lokal mit z. B. «python -m http.server».', 'error');
+    }
+
     function resetDynamicSections(){
       Object.values(branches).forEach(el => el && el.classList.add('hide'));
       if (termBlock) termBlock.classList.add('hide');
@@ -682,7 +692,14 @@
       if (wpSplitWrap) wpSplitWrap.classList.add('hide');
     }
 
-    form.addEventListener('submit', async (event) => {
+    async function handleSubmit(event){
+      if (!form) return;
+
+      if (!window.fetch || !window.FormData){
+        setStatus('⚠️ Dein Browser unterstützt die moderne Übermittlung nicht. Wir leiten zur klassischen Formspree-Seite weiter.', 'sending');
+        return; // Standard-Submit ausführen lassen
+      }
+
       event.preventDefault();
       if (!form.reportValidity()) return;
       if (!validateStrict()) return;
@@ -694,6 +711,8 @@
         submitBtn.textContent = 'Wird gesendet…';
       }
       setStatus('⏳ Anfrage wird übermittelt…', 'sending');
+
+      let fallbackToNative = false;
 
       try {
         const response = await fetch(form.action, {
@@ -724,17 +743,31 @@
           setStatus(message, 'error');
         }
       } catch (error) {
-        setStatus('❌ Es ist ein Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.', 'error');
+        console.warn('Formular konnte nicht via fetch gesendet werden – wechsle auf Fallback.', error);
+        if (error instanceof TypeError){
+          fallbackToNative = true;
+        } else {
+          setStatus('❌ Es ist ein Netzwerkfehler aufgetreten. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.', 'error');
+        }
       } finally {
         if (submitBtn){
           submitBtn.disabled = false;
           submitBtn.textContent = defaultSubmitLabel || 'Absenden';
         }
+
+        if (fallbackToNative){
+          setStatus('⚠️ Automatischer Versand blockiert. Die Formspree-Bestätigungsseite öffnet sich gleich in diesem Fenster.', 'sending');
+          setTimeout(() => form.submit(), 120);
+          return;
+        }
+
         if (status && !status.textContent){
           setStatus(defaultStatusText || '');
         }
       }
-    });
+    }
+
+    form.addEventListener('submit', handleSubmit);
 
     // Zusatzleistungen Exklusiv-Logik (Keine davon)
     form.addEventListener('change', (e)=>{
