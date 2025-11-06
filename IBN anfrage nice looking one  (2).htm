@@ -39,6 +39,8 @@
     .btnbar{display:flex;gap:10px;flex-wrap:wrap}
     .fieldset{border:1px dashed var(--bd);border-radius:12px;padding:12px;margin:10px 0}
     .fieldset>legend{padding:0 6px;color:#374151;font-weight:700}
+    .fieldset.placeholder{background:#f9fafb;border-style:solid;border-color:#e5e7eb}
+    .placeholder-text{font-size:13px;color:#4b5563}
     .hide{display:none}
     .checklist{display:grid;gap:8px}
     .checklist label{font-weight:500;margin:0;display:flex;gap:10px;align-items:center}
@@ -117,10 +119,17 @@
               <option value="komb">Kombianlage</option>
               <option value="vitoset">Vitoset Aqua (Wärmepumpenboiler)</option>
             </select>
-            <div class="help">Wählen Sie Ihre Anlage – die passende Checkliste wird automatisch eingeblendet.</div>
-          </fieldset>
+          <div class="help">Wählen Sie Ihre Anlage – die passende Checkliste wird automatisch eingeblendet.</div>
+        </fieldset>
 
-          <!-- Branch: Wärmepumpe (hidden by default) -->
+        <fieldset id="branch_placeholder" class="fieldset placeholder">
+          <legend>Checkliste</legend>
+          <div id="branch_placeholder_text" class="placeholder-text">
+            Bitte wählen Sie den passenden Anlagetyp (Wärmepumpe, Gas, Öl, Solar, …). Danach erscheint hier automatisch die entsprechende Checkliste.
+          </div>
+        </fieldset>
+
+        <!-- Branch: Wärmepumpe (hidden by default) -->
           <fieldset id="branch_wp" class="fieldset hide">
             <legend>Wärmepumpe</legend>
             <p class="intro-text">Damit am Termin alles reibungslos läuft: Bitte prüfen Sie die folgenden Punkte bis zur Inbetriebnahme gemäss Verkaufsbedingungen. Bei offenen Arbeiten kann es zu Verschiebungen und Zusatzkosten kommen.</p>
@@ -386,8 +395,8 @@
             <div class="help err hide" id="chk_error_klima">Bitte bestätigen Sie alle Punkte der Checkliste.</div>
           </fieldset>
 
-          <!-- Schritt C: Wunschtermin (hidden until category chosen) -->
-          <fieldset id="block_termine" class="fieldset hide">
+        <!-- Schritt C: Wunschtermin -->
+        <fieldset id="block_termine" class="fieldset">
             <legend>Wunschtermin</legend>
             <div class="tag ok" id="leadtime_notice">Vorlaufzeit: Bitte Anlagetyp auswählen</div>
             <div id="leadtime_warn" class="tag warn hide" role="alert" style="margin-top:8px"></div>
@@ -420,8 +429,8 @@
             <div class="help">Hinweis: Freitagnachmittag führen wir keine Inbetriebnahmen durch.</div>
           </fieldset>
 
-          <!-- Schritt D: Kontaktdaten & Adressen (hidden until category chosen) -->
-          <fieldset id="block_contacts" class="fieldset hide">
+        <!-- Schritt D: Kontaktdaten & Adressen -->
+        <fieldset id="block_contacts" class="fieldset">
             <legend>Kontaktdaten & Adressen</legend>
             <label for="company">Installateur – Firmenname *</label>
             <input id="company" name="installer_company" required />
@@ -492,8 +501,8 @@
             </div>
           </fieldset>
 
-          <!-- Schritt E: Weitere Hinweise / Notizen (hidden until category chosen) -->
-          <fieldset id="notes_block" class="fieldset hide">
+        <!-- Schritt E: Weitere Hinweise / Notizen -->
+        <fieldset id="notes_block" class="fieldset">
             <legend>Weitere Hinweise / Notizen</legend>
             <label for="notes">Optional (z. B. Schlüsselbox‑Code, Absprachen wie Termin fix mit IWB, usw.)</label>
             <textarea id="notes" name="notes" placeholder="Freitext (optional)…"></textarea>
@@ -523,18 +532,6 @@
     </div>
   </div>
 
-  <dialog id="jsonDialog">
-    <form method="dialog" style="padding:0">
-      <div class="hd" style="padding:14px 16px;border-bottom:1px solid var(--bd)">JSON‑Vorschau</div>
-      <div class="bd" style="padding:16px">
-        <pre id="jsonOut" aria-live="polite"></pre>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px">
-        <button class="btn ghost">Schliessen</button>
-      </div>
-    </form>
-  </dialog>
-
   <script>
     // --- Element-Refs ---
     const form = document.getElementById('ibnForm');
@@ -548,18 +545,38 @@
       lueft: document.getElementById('branch_lueft'),
       klima: document.getElementById('branch_klima')
     };
-    const termBlock = document.getElementById('block_termine');
-    const contactsBlock = document.getElementById('block_contacts');
-    const notesBlock = document.getElementById('notes_block');
     const same = document.getElementById('same_as_owner');
+    const branchPlaceholder = document.getElementById('branch_placeholder');
+    const branchPlaceholderText = document.getElementById('branch_placeholder_text');
+    const placeholderDefaultText = branchPlaceholderText ? branchPlaceholderText.textContent.trim() : '';
+
+    function showPlaceholder(message){
+      if (!branchPlaceholder) return;
+      const text = message && message.trim() ? message : placeholderDefaultText;
+      if (branchPlaceholderText) branchPlaceholderText.textContent = text;
+      branchPlaceholder.classList.remove('hide');
+    }
+
+    function hidePlaceholder(){
+      if (!branchPlaceholder) return;
+      branchPlaceholder.classList.add('hide');
+      if (branchPlaceholderText) branchPlaceholderText.textContent = placeholderDefaultText;
+    }
 
     function onCategoryChange(){
       const v = cat.value;
       Object.values(branches).forEach(el => el && el.classList.add('hide'));
-      if (branches[v]) branches[v].classList.remove('hide');
-      if (termBlock) termBlock.classList.remove('hide');
-      if (contactsBlock) contactsBlock.classList.remove('hide');
-      if (notesBlock) notesBlock.classList.remove('hide');
+      const branch = branches[v];
+      if (branch){
+        hidePlaceholder();
+        branch.classList.remove('hide');
+        branch.scrollIntoView({behavior:'smooth', block:'start'});
+      } else {
+        const message = v
+          ? 'Für diesen Anlagetyp steht aktuell keine eigene Checkliste bereit. Bitte ergänzen Sie Details im Feld „Weitere Hinweise / Notizen“.'
+          : placeholderDefaultText;
+        showPlaceholder(message);
+      }
       updateLeadNotice();
       updateLeadWarn();
       if (v !== 'wp'){
@@ -685,11 +702,11 @@
 
     function resetDynamicSections(){
       Object.values(branches).forEach(el => el && el.classList.add('hide'));
-      if (termBlock) termBlock.classList.add('hide');
-      if (contactsBlock) contactsBlock.classList.add('hide');
-      if (notesBlock) notesBlock.classList.add('hide');
       if (leadWarn) leadWarn.classList.add('hide');
-      if (wpSplitWrap) wpSplitWrap.classList.add('hide');
+      showPlaceholder();
+      if (cat) cat.value = '';
+      const sw = document.getElementById('wp_split_wrap');
+      if (sw) sw.classList.add('hide');
     }
 
     async function handleSubmit(event){
